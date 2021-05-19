@@ -1,0 +1,18 @@
+plugins {
+    id "java-library"
+}
+
+sourceCompatibility = "11"
+targetCompatibility = "11"
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation "com.google.cloud:google-cloud-firestore:2.4.0"
+    implementation "com.google.firebase:firebase-admin:7.3.0"
+    
+    compileOnly "org.projectlombok:lombok:1.18.8" 
+    annotationProcessor "org.projectlombok:lombok:1.18.8"
+}
