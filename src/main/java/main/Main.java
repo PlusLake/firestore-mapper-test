@@ -41,30 +41,30 @@ public class Main {
             Field[] fields = object.getClass().getDeclaredFields();
             for (Field field : fields) {
                 field.setAccessible(true);
-                map.put(field.getName(), FirebaseConvertTypes.convert(field.get(object)));
+                map.put(field.getName(), FirebaseObjectConvertTypes.convert(field.get(object)));
             }
             return map;
         }
     }
 
     @Getter
-    public enum FirebaseConvertTypes {
+    public enum FirebaseObjectConvertTypes {
         LocalDate(LocalDate.class, object -> java.sql.Timestamp.valueOf(((LocalDate) object).atStartOfDay())),
         LocalDateTime(LocalDateTime.class, object -> java.sql.Timestamp.valueOf((LocalDateTime) object));
 
-        private final Function<Object, Object> processor;
+        private final Function<Object, Object> converter;
         private final Class<?> type;
 
-        private FirebaseConvertTypes(Class<?> type, Function<Object, Object> processor) {
-            this.processor = processor;
+        private FirebaseObjectConvertTypes(Class<?> type, Function<Object, Object> converter) {
+            this.converter = converter;
             this.type = type;
         }
 
         private static Object convert(Object object) {
-            return Stream.of(FirebaseConvertTypes.values())
-                    .filter(processor -> object != null && processor.type.equals(object.getClass()))
+            return Stream.of(FirebaseObjectConvertTypes.values())
+                    .filter(converter -> object != null && converter.type.equals(object.getClass()))
                     .findAny()
-                    .map(processor -> processor.processor)
+                    .map(converter -> converter.converter)
                     .orElse(o -> o)
                     .apply(object);
         }

@@ -26,19 +26,19 @@ public enum FirebaseConvertTypes {
 	LocalDate(LocalDate.class, object -> java.sql.Timestamp.valueOf(((LocalDate) object).atStartOfDay())),
 	LocalDateTime(LocalDateTime.class, object -> java.sql.Timestamp.valueOf((LocalDateTime) object));
 
-	private final Function<Object, Object> processor;
+	private final Function<Object, Object> converter;
 	private final Class<?> type;
 
-	private FirebaseConvertTypes(Class<?> type, Function<Object, Object> processor) {
-		this.processor = processor;
+	private FirebaseConvertTypes(Class<?> type, Function<Object, Object> converter) {
+		this.converter = converter;
 		this.type = type;
 	}
 
 	private static Object convert(Object object) {
 		return Stream.of(FirebaseConvertTypes.values())
-				.filter(processor -> object != null && processor.type.equals(object.getClass()))
+				.filter(converter -> object != null && converter.type.equals(object.getClass()))
 				.findAny()
-				.map(processor -> processor.processor)
+				.map(converter -> converter.converter)
 				.orElse(o -> o)
 				.apply(object);
 	}
